@@ -15,10 +15,12 @@ public class ServerMultiCliente {
 
     // Contador de conexiones.
     public static int cantidad = 1;
+    // Maxima cantidad de conexiones a atender
+    private static final int MAX = 2;
     private static final int PUERTO = 4445;
     private static ServerMultiCliente serverXClient;
 
-     public static ServerMultiCliente getInstance() {
+    public static ServerMultiCliente getInstance() {
        if (serverXClient == null) serverXClient = new ServerMultiCliente( PUERTO );
        return serverXClient;
    }
@@ -29,9 +31,6 @@ public class ServerMultiCliente {
    }
     
     private ServerMultiCliente(int puerto) {
-        // Maxima cantidad de conexiones a atender
-        final int MAX = 2;
-
         @SuppressWarnings("UnusedAssignment")
         Socket s = null;
         ServerSocket ss2 = null;
@@ -46,7 +45,7 @@ public class ServerMultiCliente {
             try {
                 if (cantidad <= MAX) {
                     s = ss2.accept();
-                    System.out.println("Conexion establecida " + cantidad);
+                    System.out.println("Conexion establecida " + s.getInetAddress());
                     ServerThread st = new ServerThread(s);
                     st.start();
                     cantidad++;
@@ -100,7 +99,7 @@ class ServerThread extends Thread {
             System.out.println("IO Error/ Cliente " + line + " ha terminado abruptamente");
         } catch (NullPointerException e) {
             line = this.getName();
-            System.out.println("Client " + line + " cerrado");
+            System.out.println("Client " + s.getInetAddress() + " cerrado");
         } finally {
             try {
                 System.out.println("Conexion cerrandose..");
